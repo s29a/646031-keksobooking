@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Руслан Писарев](https://up.htmlacademy.ru/javascript/14/user/646031).
-* Наставник: `Неизвестно`.
+* Наставник: [Филипп Шамсиев](https://up.htmlacademy.ru/javascript/14/user/70260).
 
 ---
 
