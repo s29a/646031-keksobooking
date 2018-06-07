@@ -20,12 +20,19 @@ var PIN_HEIGHT = 70;
 var PIN_WIDTH = 50;
 var ACTIVE_OFFER_INDEX = 0;
 
-var getRandomNum = function (min, max) {
+var getRandomInt = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
 };
 
-var getRandomArrItem = function (arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
+var getRandomArrItem = function (arr, del) {
+  var randomInt = getRandomInt(0, arr.length - 1);
+  var randomItem = arr[randomInt];
+
+  if (del) {
+    arr.splice(randomInt, 1);
+  }
+
+  return randomItem;
 };
 
 var compareRandom = function () {
@@ -45,17 +52,17 @@ var addZero = function (num) {
 var getAvatarArr = function (count) {
   var arr = [];
 
-  shuffleArr(arr);
-
   for (var i = 0; i < count; i++) {
     arr[i] = AVATAR_URL + addZero(i + 1) + AVATAR_FORMAT;
   }
+
+  shuffleArr(arr);
 
   return arr;
 };
 
 var convertArrToRandomString = function (arr, randomLength) {
-  var count = randomLength ? getRandomNum(0, arr.length) : arr.length;
+  var count = randomLength ? getRandomInt(0, arr.length) : arr.length;
 
   return arr.slice(0, count).join(' ');
 };
@@ -65,22 +72,19 @@ var getRandomOffer = function (count) {
   var avatars = getAvatarArr(count);
   var titles = OFFER_TITLES.slice();
 
-  shuffleArr(titles);
-  shuffleArr(avatars);
-
   for (var i = 0; i < count; i++) {
-    var x = getRandomNum(300, 900);
-    var y = getRandomNum(130, 630);
+    var x = getRandomInt(300, 900);
+    var y = getRandomInt(130, 630);
 
     arr[i] = {
-      author: {avatar: avatars[i]},
+      author: {avatar: getRandomArrItem(avatars, true)},
       offer: {
-        title: titles[i],
+        title: getRandomArrItem(titles, true),
         address: x + ', ' + y,
-        price: getRandomNum(1000, 1000000),
+        price: getRandomInt(1000, 1000000),
         type: getRandomArrItem(Object.keys(OFFER_TYPES)),
-        rooms: getRandomNum(1, 5),
-        guests: getRandomNum(1, 20),
+        rooms: getRandomInt(1, 5),
+        guests: getRandomInt(1, 20),
         checkin: getRandomArrItem(OFFER_CHECKINS),
         checkout: getRandomArrItem(OFFER_CHECKOUTS),
         features: convertArrToRandomString(shuffleArr(OFFER_FEATURES.slice()), true),
@@ -96,9 +100,6 @@ var getRandomOffer = function (count) {
 
   return arr;
 };
-
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
 
 var renderMapPin = function (card) {
   var pinElement = document.querySelector('template').content.querySelector('.map__pin').cloneNode(true);
@@ -120,24 +121,6 @@ var createFeatureItem = function (item) {
   return featureItem;
 };
 
-var removeAllChilds = function (element) {
-  while (element.firstChild) {
-    element.removeChild(element.firstChild);
-  }
-};
-
-var renderFeatureList = function (features) {
-  var featureListFragment = document.createDocumentFragment();
-  if (features) {
-    var arr = features.split(' ');
-    for (var i = 0; i < arr.length; i++) {
-      featureListFragment.appendChild(createFeatureItem(arr[i]));
-    }
-  }
-
-  return featureListFragment;
-};
-
 var createPhotoItem = function (item) {
   var photoItem = document.querySelector('template').content.querySelector('.popup__photo').cloneNode();
   photoItem.src = item;
@@ -145,15 +128,24 @@ var createPhotoItem = function (item) {
   return photoItem;
 };
 
-var renderPhotosList = function (photos) {
-  var photoListFragment = document.createDocumentFragment();
-  if (photos) {
-    for (var i = 0; i < photos.length; i++) {
-      photoListFragment.appendChild(createPhotoItem(photos[i]));
+var removeAllChilds = function (element) {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+};
+
+var renderItemList = function (item, createFunction) {
+  var fragment = document.createDocumentFragment();
+  if (item) {
+    if (!Array.isArray(item)) {
+      item = item.split(' ');
+    }
+    for (var i = 0; i < item.length; i++) {
+      fragment.appendChild(createFunction(item[i]));
     }
   }
 
-  return photoListFragment;
+  return fragment;
 };
 
 var renderOffer = function (card) {
@@ -169,19 +161,19 @@ var renderOffer = function (card) {
 
   var featureList = offerElement.querySelector('.popup__features');
   removeAllChilds(featureList);
-  featureList.appendChild(renderFeatureList(card.offer.features));
+  featureList.appendChild(renderItemList(card.offer.features, createFeatureItem));
 
   offerElement.querySelector('.popup__description').textContent = card.offer.description;
 
   var photos = offerElement.querySelector('.popup__photos');
   removeAllChilds(photos);
-  photos.appendChild(renderPhotosList(card.offer.photos));
+  photos.appendChild(renderItemList(card.offer.photos, createPhotoItem));
 
   return offerElement;
 };
 
 var showMapPins = function (offers) {
-  var mapPinsElem = map.querySelector('.map__pins');
+  var mapPinsElem = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
 
   for (var i = 0; i < offers.length; i++) {
@@ -192,12 +184,14 @@ var showMapPins = function (offers) {
 };
 
 var showOffer = function (card) {
-  var before = map.querySelector('.map__filters-container');
-  map.appendChild(card, before);
+  var before = document.querySelector('.map__filters-container');
+  document.querySelector('.map').appendChild(card, before);
 };
 
 var showMap = function (offerCount, activeOfferIndex) {
+  var map = document.querySelector('.map');
   var arr = getRandomOffer(offerCount);
+  map.classList.remove('map--faded');
   showOffer(renderOffer(arr[activeOfferIndex]));
   showMapPins(arr);
 };
