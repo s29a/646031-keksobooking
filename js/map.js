@@ -32,6 +32,7 @@ var form = document.querySelector('.ad-form');
 var formElements = form.querySelectorAll('.ad-form fieldset');
 var formAddress = form.querySelector('#address');
 var mainPin = map.querySelector('.map__pin--main');
+var mapPinsElem = map.querySelector('.map__pins');
 
 var getRandomInt = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
@@ -197,7 +198,6 @@ var renderOffer = function (card) {
 };
 
 var showMapPins = function (items) {
-  var mapPinsElem = map.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
 
   items.forEach(function (item, i) {
