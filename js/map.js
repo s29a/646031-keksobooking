@@ -10,6 +10,13 @@ var OFFER_TYPES = {
   bungalo: 'Бунгало'
 };
 
+var MIN_PRICES = {
+  palace: '10000',
+  flat: '1000',
+  house: '5000',
+  bungalo: '0'
+};
+
 var OFFER_CHECKINS = ['12:00', '13:00', '14:00'];
 var OFFER_CHECKOUTS = OFFER_CHECKINS;
 var OFFER_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
@@ -26,6 +33,13 @@ var KEYCODE = {
   SPACE: 32
 };
 
+var ROOMS_CAPACITY = {
+  1: [1],
+  2: [1, 2],
+  3: [1, 2, 3],
+  100: [0]
+};
+
 var template = document.querySelector('template');
 var map = document.querySelector('.map');
 var form = document.querySelector('.ad-form');
@@ -33,6 +47,45 @@ var formElements = form.querySelectorAll('.ad-form fieldset');
 var formAddress = form.querySelector('#address');
 var mainPin = map.querySelector('.map__pin--main');
 var mapPinsElem = map.querySelector('.map__pins');
+var formPrice = form.querySelector('[name="price"]');
+var formType = form.querySelector('[name="type"]');
+var formCheckIn = form.querySelector('[name="timein"]');
+var formCheckOut = form.querySelector('[name="timeout"]');
+var formRooms = form.querySelector('[name="rooms"]');
+var formCapacity = form.querySelector('[name="capacity"]');
+
+formType.addEventListener('change', function () {
+  formPrice.min = MIN_PRICES[formType.value];
+  formPrice.placeholder = MIN_PRICES[formType.value];
+});
+
+formCheckIn.addEventListener('change', function () {
+  syncItem(formCheckIn, formCheckOut);
+});
+
+formCheckOut.addEventListener('change', function () {
+  syncItem(formCheckOut, formCheckIn);
+});
+
+formRooms.addEventListener('change', function () {
+  roomCheck();
+});
+
+formCapacity.addEventListener('change', function () {
+  roomCheck();
+});
+
+var roomCheck = function () {
+  var arr = ROOMS_CAPACITY[formRooms.value].slice();
+  formCapacity.setCustomValidity('');
+  if (arr.indexOf(parseInt(formCapacity.value, 10)) < 0) {
+    formCapacity.setCustomValidity('Число комнат не соответствует количеству гостей');
+  }
+};
+
+var syncItem = function (changed, syncing) {
+  syncing.selectedIndex = changed.selectedIndex;
+};
 
 var getRandomInt = function (min, max) {
   return Math.floor(min + Math.random() * (max + 1 - min));
