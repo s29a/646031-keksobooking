@@ -17,6 +17,17 @@ var MIN_PRICES = {
   bungalo: '0'
 };
 
+var ADDRESS = {
+  X: {
+    MIN: 300,
+    MAX: 900
+  },
+  Y: {
+    MIN: 130,
+    MAX: 630
+  }
+};
+
 var OFFER_CHECKINS = ['12:00', '13:00', '14:00'];
 var OFFER_CHECKOUTS = OFFER_CHECKINS;
 var OFFER_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
@@ -25,8 +36,8 @@ var AVATAR_URL = 'img/avatars/user';
 var AVATAR_FORMAT = '.png';
 var PIN_HEIGHT = 70;
 var PIN_WIDTH = 50;
-var MAIN_PIN_HEIGHT = 65;
-var MAIN_PIN_WIDTH = 65;
+var MAIN_PIN_HEIGHT = 80;
+var MAIN_PIN_WIDTH = 66;
 var KEYCODE = {
   ENTER: 13,
   ESC: 27,
@@ -140,8 +151,8 @@ var getRandomOffer = function (count) {
   var titles = OFFER_TITLES.slice();
 
   for (var i = 0; i < count; i++) {
-    var x = getRandomInt(300, 900);
-    var y = getRandomInt(130, 630);
+    var x = getRandomInt(ADDRESS.X.MIN, ADDRESS.X.MAX);
+    var y = getRandomInt(ADDRESS.Y.MIN, ADDRESS.Y.MAX);
 
     arr[i] = {
       author: {avatar: getRandomArrItem(avatars, true)},
@@ -290,7 +301,7 @@ var removePopup = function (popup) {
 
 var setAddress = function () {
   formAddress.disabled = true;
-  formAddress.value = Math.floor(mainPin.style.left.slice(0, -2) - MAIN_PIN_WIDTH / 2) + ', ' + Math.floor(mainPin.style.top.slice(0, -2) - MAIN_PIN_HEIGHT / 2);
+  formAddress.value = parseInt(Math.floor(mainPin.style.left.slice(0, -2)) + MAIN_PIN_WIDTH / 2, 10) + ', ' + parseInt(Math.floor(mainPin.style.top.slice(0, -2)) + MAIN_PIN_HEIGHT, 10);
 };
 
 var offers = getRandomOffer(OFFERS_COUNT);
@@ -323,6 +334,64 @@ var onMainPinEnterPress = function (evt) {
     showMap();
   }
 };
+
+(function () {
+  mainPin.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var dragged = false;
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      dragged = true;
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      mainPin.style.top = checkCoords(mainPin.offsetTop - shift.y, ADDRESS.Y.MIN - MAIN_PIN_HEIGHT, ADDRESS.Y.MAX) + 'px';
+      mainPin.style.left = checkCoords(mainPin.offsetLeft - shift.x, 0, map.offsetWidth - MAIN_PIN_WIDTH) + 'px';
+
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+
+      if (dragged) {
+        var onClickPreventDefault = function (clickEvt) {
+          clickEvt.preventDefault();
+          mainPin.removeEventListener('click', onClickPreventDefault);
+          setAddress();
+        };
+        mainPin.addEventListener('click', onClickPreventDefault);
+      }
+
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
+
+  var checkCoords = function (number, min, max) {
+    return Math.min(Math.max(number, min), max);
+  };
+
+})();
+
 
 setAddress();
 disableForm(true);
