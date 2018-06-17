@@ -392,7 +392,6 @@ var onMainPinEnterPress = function (evt) {
 
 })();
 
-
 setAddress();
 disableForm(true);
 mainPin.addEventListener('mouseup', onMainPinClick);
