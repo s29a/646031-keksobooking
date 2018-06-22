@@ -69,6 +69,7 @@
   var onSubmit = function () {
     var successElement = document.querySelector('.success');
     form.reset();
+    typeChange();
     document.dispatchEvent(new Event('resetAll'));
     successElement.classList.remove('hidden');
 
@@ -95,8 +96,7 @@
   });
 
   formType.addEventListener('change', function () {
-    formPrice.min = MIN_PRICES[formType.value];
-    formPrice.placeholder = MIN_PRICES[formType.value];
+    typeChange();
   });
 
   formCheckIn.addEventListener('change', function () {
@@ -114,6 +114,11 @@
   formCapacity.addEventListener('change', function () {
     roomCheck();
   });
+
+  var typeChange = function () {
+    formPrice.min = MIN_PRICES[formType.value];
+    formPrice.placeholder = MIN_PRICES[formType.value];
+  };
 
   var roomCheck = function () {
     var arr = ROOMS_CAPACITY[formRooms.value].slice();

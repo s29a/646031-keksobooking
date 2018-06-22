@@ -3,6 +3,15 @@
 (function () {
   var MAIN_PIN_HEIGHT = 80;
   var MAIN_PIN_WIDTH = 66;
+  var ADDRESS_Y = {
+    MIN: 130,
+    MAX: 630
+  };
+  var MAIN_PIN_DEFAULT_POSITION = {
+    X: 570,
+    Y: 375
+  };
+
   var map = document.querySelector('.map');
   var mainPin = map.querySelector('.map__pin--main');
   var mapPinsElem = map.querySelector('.map__pins');
@@ -92,7 +101,7 @@
         y: moveEvt.clientY
       };
 
-      mainPin.style.top = checkCoords(mainPin.offsetTop - shift.y, window.data.ADDRESS.Y.MIN - MAIN_PIN_HEIGHT, window.data.ADDRESS.Y.MAX) + 'px';
+      mainPin.style.top = checkCoords(mainPin.offsetTop - shift.y, ADDRESS_Y.MIN - MAIN_PIN_HEIGHT, ADDRESS_Y.MAX) + 'px';
       mainPin.style.left = checkCoords(mainPin.offsetLeft - shift.x, 0, map.offsetWidth - MAIN_PIN_WIDTH) + 'px';
 
     };
@@ -135,6 +144,8 @@
     removePopup();
     removePins();
     mapPinsElem.appendChild(mainPin);
+    mainPin.style.left = MAIN_PIN_DEFAULT_POSITION.X + 'px';
+    mainPin.style.top = MAIN_PIN_DEFAULT_POSITION.Y + 'px';
     window.form.setAddress(mainPin, MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT);
     mainPin.addEventListener('mouseup', onMainPinClick);
     mainPin.addEventListener('keydown', onMainPinEnterPress);
