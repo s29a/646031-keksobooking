@@ -43,6 +43,7 @@
       return checkbox.value;
     });
     removePins();
+    removePopup();
     showMapPins(window.filter(offers, filters), MAX_OFFERS);
   };
 
@@ -173,7 +174,7 @@
     });
   };
 
-  var onOfferSave = function () {
+  var onResetAll = function () {
     map.classList.add('map--faded');
     window.form.disableForm(true);
     mapFiltersElem.reset();
@@ -188,7 +189,7 @@
 
   window.form.setAddress(mainPin, MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT);
   window.form.disableForm(true);
-  document.addEventListener('resetAll', onOfferSave);
+  document.addEventListener('reset', onResetAll);
   mainPin.addEventListener('mouseup', onMainPinClick);
   mainPin.addEventListener('keydown', onMainPinEnterPress);
 
