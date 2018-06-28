@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var DEBOUNCE_INTERVAL = 500; // ms
   var MAIN_PIN_HEIGHT = 80;
   var MAIN_PIN_WIDTH = 66;
   var ADDRESS_Y = {
@@ -31,7 +32,7 @@
     features: []
   };
 
-  var onFiltersChange = function () {
+  var updateFilters = function () {
     filters.type = mapFiltersTypeElem.value;
     filters.cost = mapFiltersCostElem.value;
     filters.rooms = mapFiltersRoomsElem.value;
@@ -45,9 +46,9 @@
     showMapPins(window.filter(offers, filters), MAX_OFFERS);
   };
 
-  mapFiltersElem.addEventListener('change', function () {
-    onFiltersChange();
-  });
+  var onFiltersChange = window.debounce(updateFilters, DEBOUNCE_INTERVAL);
+
+  mapFiltersElem.addEventListener('change', onFiltersChange);
 
   var showMapPins = function (items, count) {
     var fragment = document.createDocumentFragment();
