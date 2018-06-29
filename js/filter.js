@@ -18,9 +18,9 @@
     return filterValue === NONE_FILTRED || filterValue === getCostGradation(cost);
   };
 
-  var checkFilterArr = function (arr, filterArr) {
+  var checkFilterArr = function (futureArr, filterArr) {
     return filterArr.every(function (futureItem) {
-      return arr.indexOf(futureItem) >= 0;
+      return futureArr.indexOf(futureItem) >= 0;
     });
   };
 
