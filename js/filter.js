@@ -19,18 +19,21 @@
   };
 
   var checkFilterArr = function (arr, filterArr) {
-    return filterArr.every(function (fil) {
-      return arr.indexOf(fil) >= 0;
+    return filterArr.every(function (futureItem) {
+      return arr.indexOf(futureItem) >= 0;
     });
   };
 
   var getCostGradation = function (cost) {
-    if (cost < PRICE_GRADATION.low) {
-      return LOW_COST;
-    } else if (cost > PRICE_GRADATION.high) {
-      return HIGH_COST;
-    } else {
-      return MIDDLE_COST;
+    switch (true) {
+      case cost < PRICE_GRADATION.low:
+        return LOW_COST;
+
+      case cost > PRICE_GRADATION.high:
+        return HIGH_COST;
+
+      default:
+        return MIDDLE_COST;
     }
   };
 
