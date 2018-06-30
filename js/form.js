@@ -66,11 +66,15 @@
     }
   };
 
+  form.querySelector('.ad-form__reset').addEventListener('click', function () {
+    form.reset();
+    typeChange();
+  });
+
   var onSubmit = function () {
     var successElement = document.querySelector('.success');
     form.reset();
     typeChange();
-    document.dispatchEvent(new Event('resetAll'));
     successElement.classList.remove('hidden');
 
     var onSuccesElementKeydown = function (evt) {
