@@ -42,7 +42,7 @@
     }).map(function (checkbox) {
       return checkbox.value;
     });
-    removePins();
+    window.util.removeAll(mapPinsElem.querySelectorAll('.map__pin[data-index]'));
     removePopup();
     showMapPins(window.filter(offers, filters), MAX_OFFERS);
   };
@@ -167,19 +167,12 @@
     return Math.min(Math.max(number, min), max);
   };
 
-  var removePins = function () {
-    var pins = mapPinsElem.querySelectorAll('.map__pin[data-index]');
-    pins.forEach(function (item) {
-      mapPinsElem.removeChild(item);
-    });
-  };
-
   var onResetAll = function () {
     map.classList.add('map--faded');
     window.form.disableForm(true);
     mapFiltersElem.reset();
     removePopup();
-    removePins();
+    window.util.removeAll(mapPinsElem.querySelectorAll('.map__pin[data-index]'));
     mainPin.style.left = MAIN_PIN_DEFAULT_POSITION.X + 'px';
     mainPin.style.top = MAIN_PIN_DEFAULT_POSITION.Y + 'px';
     window.form.setAddress(mainPin, MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT);

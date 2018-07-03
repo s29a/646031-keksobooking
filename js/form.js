@@ -14,7 +14,6 @@
     100: [0]
   };
   var form = document.querySelector('.ad-form');
-  var userForm = document.querySelector('.ad-form');
   var formPrice = form.querySelector('[name="price"]');
   var formType = form.querySelector('[name="type"]');
   var formCheckIn = form.querySelector('[name="timein"]');
@@ -95,7 +94,7 @@
 
   form.addEventListener('submit', function (evt) {
     formAddress.disabled = false;
-    window.backend.save(new FormData(userForm), onSubmit, window.form.errorHandler);
+    window.backend.save(new FormData(form), onSubmit, window.form.errorHandler);
     evt.preventDefault();
   });
 
@@ -135,5 +134,33 @@
   var syncItem = function (changed, syncing) {
     syncing.selectedIndex = changed.selectedIndex;
   };
+
+  var photoChooser = form.querySelector('input[name=images]');
+  var photoPreview = form.querySelector('.ad-form__photo');
+  var photoContainer = form.querySelector('.ad-form__photo-container');
+
+  photoChooser.addEventListener('change', function () {
+    var photoPreviews = form.querySelectorAll('.ad-form__photo');
+
+    window.util.removeAll(photoPreviews);
+
+    for (var i = 0; i < photoChooser.files.length; i++) {
+      var imgElement = document.createElement('img');
+      var newPhoto = photoPreview.cloneNode();
+
+      imgElement.width = '70';
+      imgElement.height = '70';
+      newPhoto.appendChild(imgElement);
+      window.images.getPreview(photoChooser.files[i], imgElement);
+      photoContainer.appendChild(newPhoto);
+    }
+  });
+
+  var avatarChooser = form.querySelector('input[name=avatar]');
+  var avatarPrewiew = form.querySelector('.ad-form-header__preview img');
+
+  avatarChooser.addEventListener('change', function () {
+    window.images.getPreview(avatarChooser.files[0], avatarPrewiew);
+  });
 
 })();

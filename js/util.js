@@ -22,6 +22,11 @@
       if (evt.keyCode === Keycode.SPACE) {
         action(evt);
       }
+    },
+    removeAll: function (elements) {
+      elements.forEach(function (item) {
+        item.parentElement.removeChild(item);
+      });
     }
   };
 })();
