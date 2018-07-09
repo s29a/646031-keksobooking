@@ -7,12 +7,12 @@
   window.pin = {
     renderMapPin: function (card, index, template, callback) {
       var pinElement = template.content.querySelector('.map__pin').cloneNode(true);
-      var pinImage = pinElement.querySelector('img');
+      var pinImageElement = pinElement.querySelector('img');
       var x = card.location.x - PIN_WIDTH / 2;
       var y = card.location.y - PIN_HEIGHT;
 
-      pinImage.src = card.author.avatar;
-      pinImage.alt = card.offer.title;
+      pinImageElement.src = card.author.avatar;
+      pinImageElement.alt = card.offer.title;
       pinElement.style = 'left: ' + x + 'px; top: ' + y + 'px;';
       pinElement.dataset.index = index;
 

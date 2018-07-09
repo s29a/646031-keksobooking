@@ -9,17 +9,17 @@
   };
 
   var createFeatureItem = function (item) {
-    var featureItem = document.createElement('li');
-    featureItem.classList.add('popup__feature', 'popup__feature--' + item);
+    var featureItemElem = document.createElement('li');
+    featureItemElem.classList.add('popup__feature', 'popup__feature--' + item);
 
-    return featureItem;
+    return featureItemElem;
   };
 
   var createPhotoItem = function (item, template) {
-    var photoItem = template.content.querySelector('.popup__photo').cloneNode();
-    photoItem.src = item;
+    var photoItemElem = template.content.querySelector('.popup__photo').cloneNode();
+    photoItemElem.src = item;
 
-    return photoItem;
+    return photoItemElem;
   };
 
   var removeAllChilds = function (element) {
@@ -54,15 +54,15 @@
       offerElement.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
       offerElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
 
-      var featureList = offerElement.querySelector('.popup__features');
-      removeAllChilds(featureList);
-      featureList.appendChild(renderItemList(card.offer.features, createFeatureItem, template));
+      var featureListElem = offerElement.querySelector('.popup__features');
+      removeAllChilds(featureListElem);
+      featureListElem.appendChild(renderItemList(card.offer.features, createFeatureItem, template));
 
       offerElement.querySelector('.popup__description').textContent = card.offer.description;
 
-      var photos = offerElement.querySelector('.popup__photos');
-      removeAllChilds(photos);
-      photos.appendChild(renderItemList(card.offer.photos, createPhotoItem, template));
+      var photosElem = offerElement.querySelector('.popup__photos');
+      removeAllChilds(photosElem);
+      photosElem.appendChild(renderItemList(card.offer.photos, createPhotoItem, template));
 
       return offerElement;
     }

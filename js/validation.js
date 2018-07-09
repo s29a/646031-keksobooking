@@ -9,7 +9,7 @@
     100: [0]
   };
 
-  var formRooms = document.querySelector('[name="rooms"]');
+  var formRoomsElem = document.querySelector('[name="rooms"]');
 
   function CustomValidation() {
     this.invalidities = [];
@@ -94,7 +94,7 @@
   var capacityValidityCheck = [
     {
       isInvalid: function (input) {
-        var arr = ROOMS_CAPACITY[formRooms.value].slice();
+        var arr = ROOMS_CAPACITY[formRoomsElem.value].slice();
         return arr.indexOf(parseInt(input.value, 10)) < 0;
       },
       getInvalidityMessage: function () {
@@ -116,39 +116,39 @@
     }
   }
 
-  var titleInput = document.querySelector('input[name="title"]');
-  var priceInput = document.querySelector('input[name="price"]');
-  var capacityInput = document.querySelector('[name="capacity"]');
+  var titleInputElem = document.querySelector('input[name="title"]');
+  var priceInputElem = document.querySelector('input[name="price"]');
+  var capacityInputElem = document.querySelector('[name="capacity"]');
 
-  titleInput.CustomValidation = new CustomValidation();
-  titleInput.CustomValidation.validityChecks = titleValidityChecks;
+  titleInputElem.CustomValidation = new CustomValidation();
+  titleInputElem.CustomValidation.validityChecks = titleValidityChecks;
 
-  priceInput.CustomValidation = new CustomValidation();
-  priceInput.CustomValidation.validityChecks = priceValidityChecks;
+  priceInputElem.CustomValidation = new CustomValidation();
+  priceInputElem.CustomValidation.validityChecks = priceValidityChecks;
 
-  capacityInput.CustomValidation = new CustomValidation();
-  capacityInput.CustomValidation.validityChecks = capacityValidityCheck;
+  capacityInputElem.CustomValidation = new CustomValidation();
+  capacityInputElem.CustomValidation.validityChecks = capacityValidityCheck;
 
   var inputs = document.querySelectorAll('input:required');
   var submit = document.querySelector('.ad-form__submit');
 
   var onPriceInputKeyup = window.debounce(function () {
-    checkInput(priceInput);
+    checkInput(priceInputElem);
   }, VALIDATION_DEBOUNCE_INTERVAL);
 
   var onTitleInputKeyup = window.debounce(function () {
-    checkInput(titleInput);
+    checkInput(titleInputElem);
   }, VALIDATION_DEBOUNCE_INTERVAL);
 
   var onCapacityInputChange = window.debounce(function () {
-    checkInput(capacityInput);
+    checkInput(capacityInputElem);
   }, VALIDATION_DEBOUNCE_INTERVAL);
 
-  priceInput.addEventListener('keyup', onPriceInputKeyup);
+  priceInputElem.addEventListener('keyup', onPriceInputKeyup);
 
-  titleInput.addEventListener('keyup', onTitleInputKeyup);
+  titleInputElem.addEventListener('keyup', onTitleInputKeyup);
 
-  capacityInput.addEventListener('change', onCapacityInputChange);
+  capacityInputElem.addEventListener('change', onCapacityInputChange);
 
   submit.addEventListener('click', function (e) {
     var stopSubmit = false;
