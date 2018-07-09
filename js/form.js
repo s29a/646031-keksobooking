@@ -7,19 +7,11 @@
     house: '5000',
     bungalo: '0'
   };
-  var ROOMS_CAPACITY = {
-    1: [1],
-    2: [1, 2],
-    3: [1, 2, 3],
-    100: [0]
-  };
   var form = document.querySelector('.ad-form');
   var formPrice = form.querySelector('[name="price"]');
   var formType = form.querySelector('[name="type"]');
   var formCheckIn = form.querySelector('[name="timein"]');
   var formCheckOut = form.querySelector('[name="timeout"]');
-  var formRooms = form.querySelector('[name="rooms"]');
-  var formCapacity = form.querySelector('[name="capacity"]');
   var formElements = form.querySelectorAll('.ad-form fieldset');
   var formAddress = form.querySelector('#address');
 
@@ -65,15 +57,20 @@
     }
   };
 
-  form.querySelector('.ad-form__reset').addEventListener('click', function () {
+  var onFormReset = function () {
     form.reset();
     typeChange();
+    document.dispatchEvent(new Event('resetAll'));
+  };
+
+  form.querySelector('.ad-form__reset').addEventListener('click', function (evt) {
+    evt.preventDefault();
+    onFormReset();
   });
 
   var onSubmit = function () {
     var successElement = document.querySelector('.success');
-    form.reset();
-    typeChange();
+    onFormReset();
     successElement.classList.remove('hidden');
 
     var onSuccesElementKeydown = function (evt) {
@@ -110,25 +107,9 @@
     syncItem(formCheckOut, formCheckIn);
   });
 
-  formRooms.addEventListener('change', function () {
-    roomCheck();
-  });
-
-  formCapacity.addEventListener('change', function () {
-    roomCheck();
-  });
-
   var typeChange = function () {
     formPrice.min = MIN_PRICES[formType.value];
     formPrice.placeholder = MIN_PRICES[formType.value];
-  };
-
-  var roomCheck = function () {
-    var arr = ROOMS_CAPACITY[formRooms.value].slice();
-    formCapacity.setCustomValidity('');
-    if (arr.indexOf(parseInt(formCapacity.value, 10)) < 0) {
-      formCapacity.setCustomValidity('Число комнат не соответствует количеству гостей');
-    }
   };
 
   var syncItem = function (changed, syncing) {

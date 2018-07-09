@@ -89,7 +89,7 @@
     document.removeEventListener('keydown', onCloseEscPress);
   };
 
-  var offers;
+  var offers = {};
 
   var getOffers = function (response) {
     offers = response;
@@ -172,6 +172,7 @@
     window.form.disableForm(true);
     mapFiltersElem.reset();
     removePopup();
+    window.util.removeAll(document.querySelectorAll('.validation__error'));
     window.util.removeAll(mapPinsElem.querySelectorAll('.map__pin[data-index]'));
     mainPin.style.left = MAIN_PIN_DEFAULT_POSITION.X + 'px';
     mainPin.style.top = MAIN_PIN_DEFAULT_POSITION.Y + 'px';
@@ -182,7 +183,7 @@
 
   window.form.setAddress(mainPin, MAIN_PIN_WIDTH, MAIN_PIN_HEIGHT);
   window.form.disableForm(true);
-  document.addEventListener('reset', onResetAll);
+  document.addEventListener('resetAll', onResetAll);
   mainPin.addEventListener('mouseup', onMainPinClick);
   mainPin.addEventListener('keydown', onMainPinEnterPress);
 
