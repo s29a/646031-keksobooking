@@ -1,6 +1,7 @@
 'use strict';
 (function () {
   var ERROR_TEXT_COLOR = 'red';
+  var ERROR_BORDER_STYLE = '1px solid red';
   var VALIDATION_DEBOUNCE_INTERVAL = 300;
   var ROOMS_CAPACITY = {
     1: [1],
@@ -9,7 +10,23 @@
     100: [0]
   };
 
-  var formRoomsElem = document.querySelector('[name="rooms"]');
+  var titleInputElem = document.querySelector('input[name="title"]');
+  var priceInputElem = document.querySelector('input[name="price"]');
+  var capacityInputElem = document.querySelector('[name="capacity"]');
+  var inputs = [titleInputElem, priceInputElem, capacityInputElem];
+  var submit = document.querySelector('.ad-form__submit');
+
+  var roomsInputElem = document.querySelector('[name="rooms"]');
+  var typeInputElem = document.querySelector('[name="type"]');
+
+  window.validation = {
+    clearErrors: function () {
+      inputs.forEach(function (item) {
+        item.CustomValidation.clearErrorElement();
+        item.style.border = '';
+      });
+    }
+  };
 
   function CustomValidation() {
     this.invalidities = [];
@@ -24,18 +41,20 @@
     getInvalidities: function () {
       return this.invalidities.join('. \n');
     },
-    createElement: function (input) {
+    createErrorElement: function (input) {
       this.errorElement = document.createElement('p');
       this.errorElement.style.color = ERROR_TEXT_COLOR;
+      this.errorElement.style.height = '2em';
+      this.errorElement.style.margin = '0';
+      this.errorElement.style.width = 'calc(100% - 20px)';
       this.errorElement.classList.add('validation__error');
       input.parentElement.appendChild(this.errorElement);
     },
+    clearErrorElement: function () {
+      this.errorElement.textContent = '';
+    },
     checkValidity: function (input) {
       for (var i = 0; i < this.validityChecks.length; i++) {
-        if (!this.errorElement) {
-          this.createElement(input);
-        }
-
         var isInvalid = this.validityChecks[i].isInvalid(input);
         if (isInvalid) {
           this.addInvalidity(this.validityChecks[i].getInvalidityMessage(input));
@@ -94,7 +113,7 @@
   var capacityValidityCheck = [
     {
       isInvalid: function (input) {
-        var arr = ROOMS_CAPACITY[formRoomsElem.value].slice();
+        var arr = ROOMS_CAPACITY[roomsInputElem.value].slice();
         return arr.indexOf(parseInt(input.value, 10)) < 0;
       },
       getInvalidityMessage: function () {
@@ -107,32 +126,32 @@
     input.CustomValidation.invalidities = [];
     input.CustomValidation.checkValidity(input);
     if (input.CustomValidation.invalidities.length === 0 && input.value !== '') {
+      input.style.border = '';
       input.setCustomValidity('');
       input.CustomValidation.errorElement.textContent = '';
     } else {
       var message = input.CustomValidation.getInvalidities();
+      input.style.border = ERROR_BORDER_STYLE;
       input.setCustomValidity(message);
       input.CustomValidation.errorElement.textContent = message;
     }
   }
 
-  var titleInputElem = document.querySelector('input[name="title"]');
-  var priceInputElem = document.querySelector('input[name="price"]');
-  var capacityInputElem = document.querySelector('[name="capacity"]');
+  var createCustomValidity = function (input, checkFunction) {
+    input.CustomValidation = new CustomValidation();
+    input.CustomValidation.validityChecks = checkFunction;
+    input.CustomValidation.createErrorElement(input);
+  };
 
-  titleInputElem.CustomValidation = new CustomValidation();
-  titleInputElem.CustomValidation.validityChecks = titleValidityChecks;
-
-  priceInputElem.CustomValidation = new CustomValidation();
-  priceInputElem.CustomValidation.validityChecks = priceValidityChecks;
-
-  capacityInputElem.CustomValidation = new CustomValidation();
-  capacityInputElem.CustomValidation.validityChecks = capacityValidityCheck;
-
-  var inputs = document.querySelectorAll('input:required');
-  var submit = document.querySelector('.ad-form__submit');
+  createCustomValidity(titleInputElem, titleValidityChecks);
+  createCustomValidity(priceInputElem, priceValidityChecks);
+  createCustomValidity(capacityInputElem, capacityValidityCheck);
 
   var onPriceInputKeyup = window.debounce(function () {
+    checkInput(priceInputElem);
+  }, VALIDATION_DEBOUNCE_INTERVAL);
+
+  var onTypeInputChange = window.debounce(function () {
     checkInput(priceInputElem);
   }, VALIDATION_DEBOUNCE_INTERVAL);
 
@@ -144,21 +163,22 @@
     checkInput(capacityInputElem);
   }, VALIDATION_DEBOUNCE_INTERVAL);
 
+  var onRoomsInputChange = window.debounce(function () {
+    checkInput(capacityInputElem);
+  }, VALIDATION_DEBOUNCE_INTERVAL);
+
   priceInputElem.addEventListener('keyup', onPriceInputKeyup);
 
   titleInputElem.addEventListener('keyup', onTitleInputKeyup);
 
   capacityInputElem.addEventListener('change', onCapacityInputChange);
 
-  submit.addEventListener('click', function (e) {
-    var stopSubmit = false;
+  roomsInputElem.addEventListener('change', onRoomsInputChange);
+  typeInputElem.addEventListener('change', onTypeInputChange);
 
+  submit.addEventListener('click', function () {
     for (var i = 0; i < inputs.length; i++) {
       checkInput(inputs[i]);
-    }
-
-    if (stopSubmit) {
-      e.preventDefault();
     }
   });
 

@@ -36,7 +36,7 @@
 
     setAddress: function (pin, pinWidth, pinHeight) {
       formAddressElem.disabled = true;
-      formAddressElem.value = parseInt(Math.floor(pin.style.left.slice(0, -2)) + pinWidth / 2, 10) + ', ' + parseInt(Math.floor(pin.style.top.slice(0, -2)) + pinHeight, 10);
+      formAddressElem.value = parseInt(Math.floor(pin.style.left.slice(0, -2)) + pinWidth, 10) + ', ' + parseInt(Math.floor(pin.style.top.slice(0, -2)) + pinHeight, 10);
     },
 
     onError: function (errorMessage) {
