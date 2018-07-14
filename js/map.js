@@ -27,6 +27,7 @@
   var mapFiltersCostElem = mapFiltersElem.querySelector('[name="housing-price"]');
   var mapFiltersRoomsElem = mapFiltersElem.querySelector('[name="housing-rooms"]');
   var mapFiltersGuestsElem = mapFiltersElem.querySelector('[name="housing-guests"]');
+  var mainPinActive = false;
   var filters = {
     type: 'any',
     cost: 'any',
@@ -169,6 +170,10 @@
 
       var pinHeight = MAIN_PIN_SIZE.HEIGHT + MAIN_PIN_SIZE.ARROW_HEIGHT;
 
+      if (!mainPinActive) {
+        pinHeight = MAIN_PIN_SIZE.HEIGHT / 2;
+      }
+
       mainPinElem.style.top = checkCoords(mainPinElem.offsetTop - shift.y, ADDRESS_Y.MIN - pinHeight, ADDRESS_Y.MAX - pinHeight) + 'px';
       mainPinElem.style.left = checkCoords(mainPinElem.offsetLeft - shift.x, 0, mapElem.offsetWidth - MAIN_PIN_SIZE.WIDTH) + 'px';
       window.form.setAddress(mainPinElem, MAIN_PIN_SIZE.WIDTH / 2, pinHeight);
@@ -179,6 +184,11 @@
 
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
+
+      if (!mainPinActive) {
+        mainPinElem.style.top = parseInt(mainPinElem.style.top.slice(0, -2), 10) - MAIN_PIN_SIZE.HEIGHT / 2 - MAIN_PIN_SIZE.ARROW_HEIGHT + 'px';
+        mainPinActive = true;
+      }
 
       if (dragged) {
         var onClickPreventDefault = function (clickEvt) {
@@ -199,6 +209,7 @@
   };
 
   var onResetAll = function () {
+    mainPinActive = false;
     mapElem.classList.add('map--faded');
     window.form.disableForm(true);
     mapFiltersElem.reset();

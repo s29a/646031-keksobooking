@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var ERROR_TEXT_COLOR = 'red';
   var ERROR_BORDER_STYLE = '1px solid red';
@@ -10,11 +11,12 @@
     100: [0]
   };
 
-  var titleInputElem = document.querySelector('input[name="title"]');
-  var priceInputElem = document.querySelector('input[name="price"]');
-  var capacityInputElem = document.querySelector('[name="capacity"]');
+  var formElem = document.querySelector('.ad-form');
+  var titleInputElem = formElem.querySelector('input[name="title"]');
+  var priceInputElem = formElem.querySelector('input[name="price"]');
+  var capacityInputElem = formElem.querySelector('[name="capacity"]');
   var inputs = [titleInputElem, priceInputElem, capacityInputElem];
-  var submit = document.querySelector('.ad-form__submit');
+  var submit = formElem.querySelector('.ad-form__submit');
 
   var roomsInputElem = document.querySelector('[name="rooms"]');
   var typeInputElem = document.querySelector('[name="type"]');
@@ -109,7 +111,6 @@
     }
   ];
 
-
   var capacityValidityCheck = [
     {
       isInvalid: function (input) {
@@ -181,5 +182,4 @@
       checkInput(inputs[i]);
     }
   });
-
 })();
