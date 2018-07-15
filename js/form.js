@@ -7,22 +7,19 @@
     house: '5000',
     bungalo: '0'
   };
-  var ROOMS_CAPACITY = {
-    1: [1],
-    2: [1, 2],
-    3: [1, 2, 3],
-    100: [0]
-  };
-  var form = document.querySelector('.ad-form');
-  var userForm = document.querySelector('.ad-form');
-  var formPrice = form.querySelector('[name="price"]');
-  var formType = form.querySelector('[name="type"]');
-  var formCheckIn = form.querySelector('[name="timein"]');
-  var formCheckOut = form.querySelector('[name="timeout"]');
-  var formRooms = form.querySelector('[name="rooms"]');
-  var formCapacity = form.querySelector('[name="capacity"]');
-  var formElements = form.querySelectorAll('.ad-form fieldset');
-  var formAddress = form.querySelector('#address');
+  var formElem = document.querySelector('.ad-form');
+  var formPriceElem = formElem.querySelector('[name="price"]');
+  var formTypeElem = formElem.querySelector('[name="type"]');
+  var formCheckInElem = formElem.querySelector('[name="timein"]');
+  var formCheckOutElem = formElem.querySelector('[name="timeout"]');
+  var formElements = formElem.querySelectorAll('.ad-form fieldset');
+  var formAddressElem = formElem.querySelector('#address');
+  var photoChooserElem = formElem.querySelector('input[name=images]');
+  var photoPreviewElem = formElem.querySelector('.ad-form__photo');
+  var photoContainerElem = formElem.querySelector('.ad-form__photo-container');
+  var avatarChooserElem = formElem.querySelector('input[name=avatar]');
+  var avatarPrewiewElem = formElem.querySelector('.ad-form-header__preview img');
+  var defaultAvatarImg = avatarPrewiewElem.src;
 
   window.form = {
     disableForm: function (disabled) {
@@ -31,18 +28,18 @@
       });
 
       if (disabled) {
-        form.classList.add('ad-form--disabled');
+        formElem.classList.add('ad-form--disabled');
       } else {
-        form.classList.remove('ad-form--disabled');
+        formElem.classList.remove('ad-form--disabled');
       }
     },
 
     setAddress: function (pin, pinWidth, pinHeight) {
-      formAddress.disabled = true;
-      formAddress.value = parseInt(Math.floor(pin.style.left.slice(0, -2)) + pinWidth / 2, 10) + ', ' + parseInt(Math.floor(pin.style.top.slice(0, -2)) + pinHeight, 10);
+      formAddressElem.disabled = true;
+      formAddressElem.value = parseInt(Math.floor(pin.style.left.slice(0, -2)) + pinWidth, 10) + ', ' + parseInt(Math.floor(pin.style.top.slice(0, -2)) + pinHeight, 10);
     },
 
-    errorHandler: function (errorMessage) {
+    onError: function (errorMessage) {
       var errorElement = document.querySelector('.success').cloneNode(true);
       errorElement.style.backgroundColor = 'rgba(150, 0, 0, 0.8)';
       errorElement.querySelector('p').textContent = errorMessage;
@@ -66,15 +63,23 @@
     }
   };
 
-  form.querySelector('.ad-form__reset').addEventListener('click', function () {
-    form.reset();
+  var onFormReset = function () {
+    formElem.reset();
     typeChange();
+    window.util.removeAll(formElem.querySelectorAll('.ad-form__photo'));
+    photoContainerElem.appendChild(photoPreviewElem);
+    avatarPrewiewElem.src = defaultAvatarImg;
+    document.dispatchEvent(new Event('resetAll'));
+  };
+
+  formElem.querySelector('.ad-form__reset').addEventListener('click', function (evt) {
+    evt.preventDefault();
+    onFormReset();
   });
 
   var onSubmit = function () {
     var successElement = document.querySelector('.success');
-    form.reset();
-    typeChange();
+    onFormReset();
     successElement.classList.remove('hidden');
 
     var onSuccesElementKeydown = function (evt) {
@@ -93,47 +98,50 @@
     document.addEventListener('keydown', onSuccesElementKeydown);
   };
 
-  form.addEventListener('submit', function (evt) {
-    formAddress.disabled = false;
-    window.backend.save(new FormData(userForm), onSubmit, window.form.errorHandler);
+  formElem.addEventListener('submit', function (evt) {
+    formAddressElem.disabled = false;
+    window.backend.save(new FormData(formElem), onSubmit, window.form.onError);
     evt.preventDefault();
   });
 
-  formType.addEventListener('change', function () {
+  formTypeElem.addEventListener('change', function () {
     typeChange();
   });
 
-  formCheckIn.addEventListener('change', function () {
-    syncItem(formCheckIn, formCheckOut);
+  formCheckInElem.addEventListener('change', function () {
+    syncItem(formCheckInElem, formCheckOutElem);
   });
 
-  formCheckOut.addEventListener('change', function () {
-    syncItem(formCheckOut, formCheckIn);
-  });
-
-  formRooms.addEventListener('change', function () {
-    roomCheck();
-  });
-
-  formCapacity.addEventListener('change', function () {
-    roomCheck();
+  formCheckOutElem.addEventListener('change', function () {
+    syncItem(formCheckOutElem, formCheckInElem);
   });
 
   var typeChange = function () {
-    formPrice.min = MIN_PRICES[formType.value];
-    formPrice.placeholder = MIN_PRICES[formType.value];
-  };
-
-  var roomCheck = function () {
-    var arr = ROOMS_CAPACITY[formRooms.value].slice();
-    formCapacity.setCustomValidity('');
-    if (arr.indexOf(parseInt(formCapacity.value, 10)) < 0) {
-      formCapacity.setCustomValidity('Число комнат не соответствует количеству гостей');
-    }
+    formPriceElem.min = MIN_PRICES[formTypeElem.value];
+    formPriceElem.placeholder = MIN_PRICES[formTypeElem.value];
   };
 
   var syncItem = function (changed, syncing) {
     syncing.selectedIndex = changed.selectedIndex;
   };
+
+  photoChooserElem.addEventListener('change', function () {
+    window.util.removeAll(formElem.querySelectorAll('.ad-form__photo'));
+
+    for (var i = 0; i < photoChooserElem.files.length; i++) {
+      var imgElement = document.createElement('img');
+      var newPhotoElement = photoPreviewElem.cloneNode();
+
+      imgElement.width = '70';
+      imgElement.height = '70';
+      newPhotoElement.appendChild(imgElement);
+      window.images.getPreview(photoChooserElem.files[i], imgElement);
+      photoContainerElem.appendChild(newPhotoElement);
+    }
+  });
+
+  avatarChooserElem.addEventListener('change', function () {
+    window.images.getPreview(avatarChooserElem.files[0], avatarPrewiewElem);
+  });
 
 })();

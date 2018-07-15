@@ -9,17 +9,17 @@
   };
 
   var createFeatureItem = function (item) {
-    var featureItem = document.createElement('li');
-    featureItem.classList.add('popup__feature', 'popup__feature--' + item);
+    var featureItemElem = document.createElement('li');
+    featureItemElem.classList.add('popup__feature', 'popup__feature--' + item);
 
-    return featureItem;
+    return featureItemElem;
   };
 
-  var createPhotoItem = function (item, template) {
-    var photoItem = template.content.querySelector('.popup__photo').cloneNode();
-    photoItem.src = item;
+  var createPhotoItem = function (item) {
+    var photoItemElem = template.querySelector('.popup__photo').cloneNode();
+    photoItemElem.src = item;
 
-    return photoItem;
+    return photoItemElem;
   };
 
   var removeAllChilds = function (element) {
@@ -28,43 +28,50 @@
     }
   };
 
-  var renderItemList = function (items, createFunction, template) {
-    var fragment = document.createDocumentFragment();
-    if (items) {
+  var renderListElement = function (element, items, beforeElement, createItemFunction) {
+    removeAllChilds(element);
+    if (items.length > 0) {
       if (!Array.isArray(items)) {
         items = items.split(' ');
       }
       items.forEach(function (item) {
-        fragment.appendChild(createFunction(item, template));
+        element.appendChild(createItemFunction(item));
       });
+      popupOfferElem.insertBefore(element, beforeElement);
+    } else {
+      popupOfferElem.removeChild(element);
     }
-
-    return fragment;
   };
 
+  var template;
+  var photosElem;
+  var popupOfferElem;
+  var featureListElem;
+
   window.card = {
-    renderOffer: function (card, template) {
-      var offerElement = template.content.querySelector('.map__card').cloneNode(true);
+    createOfferPopup: function (element) {
+      template = element.content.querySelector('.map__card');
+      popupOfferElem = template.cloneNode(true);
+      photosElem = popupOfferElem.querySelector('.popup__photos');
+      featureListElem = popupOfferElem.querySelector('.popup__features');
+      return popupOfferElem;
+    },
+    renderOffer: function (card) {
+      var descriptionElem = popupOfferElem.querySelector('.popup__description');
 
-      offerElement.querySelector('.popup__avatar').src = card.author.avatar;
-      offerElement.querySelector('.popup__title').textContent = card.offer.title;
-      offerElement.querySelector('.popup__text--address').textContent = card.offer.address;
-      offerElement.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
-      offerElement.querySelector('.popup__type').textContent = OFFER_TYPES[card.offer.type];
-      offerElement.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
-      offerElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
+      popupOfferElem.querySelector('.popup__avatar').src = card.author.avatar;
+      popupOfferElem.querySelector('.popup__title').textContent = card.offer.title;
+      popupOfferElem.querySelector('.popup__text--address').textContent = card.offer.address;
+      popupOfferElem.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
+      popupOfferElem.querySelector('.popup__type').textContent = OFFER_TYPES[card.offer.type];
+      popupOfferElem.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
+      popupOfferElem.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
 
-      var featureList = offerElement.querySelector('.popup__features');
-      removeAllChilds(featureList);
-      featureList.appendChild(renderItemList(card.offer.features, createFeatureItem, template));
+      renderListElement(featureListElem, card.offer.features, descriptionElem, createFeatureItem);
 
-      offerElement.querySelector('.popup__description').textContent = card.offer.description;
+      descriptionElem.textContent = card.offer.description;
 
-      var photos = offerElement.querySelector('.popup__photos');
-      removeAllChilds(photos);
-      photos.appendChild(renderItemList(card.offer.photos, createPhotoItem, template));
-
-      return offerElement;
+      renderListElement(photosElem, card.offer.photos, null, createPhotoItem);
     }
   };
 })();
