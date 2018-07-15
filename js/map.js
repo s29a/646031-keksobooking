@@ -21,7 +21,7 @@
   var mainPinElem = mapElem.querySelector('.map__pin--main');
   var mapPinsElem = mapElem.querySelector('.map__pins');
   var template = document.querySelector('template');
-  var mapFiltersElem = document.querySelector('.map__filters');
+  var mapFiltersElem = mapElem.querySelector('.map__filters');
   var mapFiltersFeaturesElements = mapFiltersElem.querySelectorAll('[name="features"');
   var mapFiltersTypeElem = mapFiltersElem.querySelector('[name="housing-type"]');
   var mapFiltersCostElem = mapFiltersElem.querySelector('[name="housing-price"]');

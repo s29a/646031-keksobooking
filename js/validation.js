@@ -18,8 +18,8 @@
   var inputs = [titleInputElem, priceInputElem, capacityInputElem];
   var submit = formElem.querySelector('.ad-form__submit');
 
-  var roomsInputElem = document.querySelector('[name="rooms"]');
-  var typeInputElem = document.querySelector('[name="type"]');
+  var roomsInputElem = formElem.querySelector('[name="rooms"]');
+  var typeInputElem = formElem.querySelector('[name="type"]');
 
   window.validation = {
     clearErrors: function () {
